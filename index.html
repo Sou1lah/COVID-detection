@@ -103,23 +103,23 @@
     </aside>
 
     <section class="panel preview-panel" aria-labelledby="preview-title">
-        <h2 id="preview-title">Try the image preview</h2>
-        <p class="muted">Select a local image. It stays in your browser and is not uploaded.</p>
-        <label for="image-file">Choose an image
-          <input id="image-file" type="file" accept="image/*">
-        </label>
-        <div class="dropzone">
-          <p id="empty-preview">Your selected image will appear here.</p>
-          <img id="image-preview" alt="Local chest X-ray preview" hidden>
+      <h2 id="preview-title">Try the image preview</h2>
+      <p class="muted">Select a local image. It stays in your browser and is not uploaded.</p>
+      <label for="image-file">Choose an image
+        <input id="image-file" type="file" accept="image/*">
+      </label>
+      <div class="dropzone">
+        <p id="empty-preview">Your selected image will appear here.</p>
+        <img id="image-preview" alt="Local chest X-ray preview" hidden>
+      </div>
+      <section id="demo-results" aria-label="Example results" hidden>
+        <div class="demo-metrics">
+          <div class="demo-metric"><span>Saved test accuracy</span><strong>56.73%</strong></div>
+          <div class="demo-metric"><span>Example confidence (not calculated)</span><strong>87%</strong></div>
         </div>
-        <section id="demo-results" aria-label="Example results" hidden>
-          <div class="demo-metrics">
-            <div class="demo-metric"><span>Saved test accuracy</span><strong>56.73%</strong></div>
-            <div class="demo-metric"><span>Example confidence (not calculated)</span><strong>87%</strong></div>
-          </div>
-          <p class="small-print">Example result: PNEUMONIA · This is fixed demo text, not a prediction for your image.</p>
-        </section>
-        <p id="upload-status" class="small-print" aria-live="polite">No image selected.</p>
+        <p class="small-print">Example result: PNEUMONIA · This is fixed demo text, not a prediction for your image.</p>
+      </section>
+      <p id="upload-status" class="small-print" aria-live="polite">No image selected.</p>
     </section>
 
     <p class="footer">
