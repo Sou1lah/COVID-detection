@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Interactive preview of saved chest X-ray classifier metrics. Not a diagnostic tool.">
+  <title>Chest X-ray model results preview</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0b1220;
+      --panel: #111c2e;
+      --panel-raised: #17253a;
+      --border: #263750;
+      --text: #e8eef8;
+      --muted: #9babc1;
+      --accent: #62d5c4;
+      --blue: #70a8ff;
+      --warning: #ffd27a;
+      --danger: #ff9c9c;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: radial-gradient(ellipse at 80% 0%, #14243b 0, var(--bg) 45rem);
+      color: var(--text);
+      font: 16px/1.55 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    main { width: min(1100px, calc(100% - 32px)); margin: 42px auto 72px; }
+    h1, h2, p { margin-top: 0; }
+    h1 { margin-bottom: 8px; font-size: clamp(2rem, 4vw, 3rem); line-height: 1.1; }
+    h2 { margin-bottom: 6px; font-size: 1.15rem; }
+    .eyebrow { color: var(--accent); font-size: .78rem; font-weight: 750; letter-spacing: .14em; text-transform: uppercase; }
+    .lead, .muted { color: var(--muted); }
+    .notice {
+      margin: 24px 0;
+      padding: 16px 18px;
+      border: 1px solid #735d32;
+      border-radius: 12px;
+      background: #2a2419;
+      color: #ffe8b9;
+    }
+    .notice strong { color: var(--warning); }
+    .panel {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: color-mix(in srgb, var(--panel) 92%, transparent);
+    }
+    label { display: grid; gap: 6px; color: var(--muted); font-size: .88rem; font-weight: 650; }
+    input[type="file"] {
+      max-width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #3a4d68;
+      border-radius: 9px;
+      background: #0d1727;
+      color: var(--text);
+      font: inherit;
+    }
+    input:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+    .panel { padding: 20px; }
+    .preview-panel { max-width: 720px; margin: 0 auto; }
+    .dropzone {
+      display: grid;
+      min-height: 250px;
+      place-items: center;
+      margin-top: 14px;
+      overflow: hidden;
+      border: 1px dashed #48617e;
+      border-radius: 12px;
+      background: #0c1625;
+      color: var(--muted);
+      text-align: center;
+    }
+    .dropzone img { display: block; max-width: 100%; max-height: 420px; object-fit: contain; }
+    .dropzone img[hidden], #empty-preview[hidden] { display: none; }
+    #demo-results[hidden] { display: none; }
+    .demo-metrics { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 16px; }
+    .demo-metric { padding: 14px; border: 1px solid var(--border); border-radius: 10px; background: var(--panel-raised); }
+    .demo-metric span { display: block; color: var(--muted); font-size: .84rem; }
+    .demo-metric strong { display: block; margin-top: 4px; color: var(--accent); font-size: 1.35rem; }
+    .small-print { margin-top: 12px; color: var(--muted); font-size: .84rem; }
+    .footer { margin-top: 24px; color: var(--muted); font-size: .86rem; }
+    a { color: var(--blue); }
+    @media (max-width: 720px) {
+      main { margin-top: 28px; }
+      .demo-metrics { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <p class="eyebrow">Educational project · Results preview</p>
+    <h1>Chest X-ray classifier</h1>
+    <p class="lead">Choose a chest X-ray to preview the page. The displayed prediction and confidence are examples only.</p>
+
+    <aside class="notice" role="note">
+      <strong>Demo only — no model inference is performed.</strong>
+      The prediction and confidence below are fixed sample values, not an analysis of your image. The test accuracy is from previously saved notebook results. This is not a COVID-19 detector or medical diagnostic tool.
+    </aside>
+
+    <section class="panel preview-panel" aria-labelledby="preview-title">
+        <h2 id="preview-title">Try the image preview</h2>
+        <p class="muted">Select a local image. It stays in your browser and is not uploaded.</p>
+        <label for="image-file">Choose an image
+          <input id="image-file" type="file" accept="image/*">
+        </label>
+        <div class="dropzone">
+          <p id="empty-preview">Your selected image will appear here.</p>
+          <img id="image-preview" alt="Local chest X-ray preview" hidden>
+        </div>
+        <section id="demo-results" aria-label="Example results" hidden>
+          <div class="demo-metrics">
+            <div class="demo-metric"><span>Saved test accuracy</span><strong>56.73%</strong></div>
+            <div class="demo-metric"><span>Example confidence (not calculated)</span><strong>87%</strong></div>
+          </div>
+          <p class="small-print">Example result: PNEUMONIA · This is fixed demo text, not a prediction for your image.</p>
+        </section>
+        <p id="upload-status" class="small-print" aria-live="polite">No image selected.</p>
+    </section>
+
+    <p class="footer">
+      The 56.73% test accuracy is transcribed from previously saved DenseNet121 results, before notebook corrections. See the
+      <a href="README.md">README</a> for details. No image is sent to a server.
+    </p>
+  </main>
+
+  <script>
+    const imageInput = document.getElementById("image-file");
+    const imagePreview = document.getElementById("image-preview");
+    const emptyPreview = document.getElementById("empty-preview");
+    const uploadStatus = document.getElementById("upload-status");
+    const demoResults = document.getElementById("demo-results");
+    let currentObjectUrl;
+
+    function clearPreview() {
+      if (currentObjectUrl) URL.revokeObjectURL(currentObjectUrl);
+      currentObjectUrl = undefined;
+      imagePreview.removeAttribute("src");
+      imagePreview.hidden = true;
+      emptyPreview.hidden = false;
+      demoResults.hidden = true;
+    }
+
+    imageInput.addEventListener("change", () => {
+      const file = imageInput.files && imageInput.files[0];
+      if (!file) {
+        clearPreview();
+        uploadStatus.textContent = "No image selected.";
+        return;
+      }
+      if (!file.type.startsWith("image/")) {
+        clearPreview();
+        uploadStatus.textContent = "Please choose an image file.";
+        imageInput.value = "";
+        return;
+      }
+      clearPreview();
+      currentObjectUrl = URL.createObjectURL(file);
+      imagePreview.src = currentObjectUrl;
+      imagePreview.hidden = false;
+      emptyPreview.hidden = true;
+      demoResults.hidden = false;
+      uploadStatus.textContent = `${file.name} selected. The result shown is only a demo.`;
+    });
+  </script>
+</body>
+</html>
